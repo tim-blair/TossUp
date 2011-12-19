@@ -1,42 +1,37 @@
-require_relative 'Dice'
-def turn
-	score = 0
-	dice = 10
+require_relative 'ComputerPlayer'
+require_relative 'HeuristicComputerPlayer'
 
-	while true
-		rolls = []
-		dice.times do
-			rolls << Dice.roll
-		end
-		greens = rolls.count { |x| x.green? }
-		if greens.zero? and not (rolls.count { |x| x.red? }).zero?
-			score = 0
-			break
-		end
-		dice -= greens
-		score += greens
-		break unless continue? score
-		if dice.zero?
-			dice = 10
-		end
-	end
-	score
-end
-
-def continue?(score)
-	puts "Your score is #{score} continue? (y/n)"
-	while true
-		answer = gets
-		answer.chomp!.downcase!
-		if answer == 'y' or answer == 'yes'
-			return true
-		elsif answer == 'n' or answer == 'no'
-			return false
-		else
-			puts 'Continue? please enter yes or no'
-		end
+players = []
+players << HeuristicComputerPlayer.new(2)
+players << HeuristicComputerPlayer.new(3)
+players << HeuristicComputerPlayer.new(4)
+players << HeuristicComputerPlayer.new(5)
+#dice min, score min
+#players << ComputerPlayer.new(1, 8)
+#players << ComputerPlayer.new(1, 10)
+#players << ComputerPlayer.new(1, 20)
+#players << ComputerPlayer.new(1, 30)
+#players << ComputerPlayer.new(2, 7)
+#players << ComputerPlayer.new(2, 17)
+#players << ComputerPlayer.new(2, 27)
+#players << ComputerPlayer.new(2, 37)
+#players << ComputerPlayer.new(3, 6)
+#players << ComputerPlayer.new(3, 16)
+#players << ComputerPlayer.new(3, 26)
+#players << ComputerPlayer.new(3, 36)
+(1...10).each do |dice_min|
+	(1...6).each do |score_min|
+		players << ComputerPlayer.new(dice_min, score_min * 10)
+		players << ComputerPlayer.new(dice_min, score_min * 9)
+		players << ComputerPlayer.new(dice_min, score_min * 8)
 	end
 end
 
-score = turn()
-puts "Your score is #{score}"
+10000.times do
+	players.each { |p| p.turn }
+end
+
+sorted = players.sort
+sorted.each do |p|
+	puts "#{p.name} #{p.score}"
+end
